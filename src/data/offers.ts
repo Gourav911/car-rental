@@ -8,7 +8,7 @@ export const offers: Offer[] = [
     discount: '25% OFF',
     image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80',
     badge: 'Most Popular',
-    validUntil: '2025-12-31',
+    validUntil: '2026-12-31',
     code: 'WEEKEND25',
   },
   {
@@ -18,7 +18,7 @@ export const offers: Offer[] = [
     discount: '40% OFF',
     image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=80',
     badge: 'Best Value',
-    validUntil: '2025-12-31',
+    validUntil: '2026-12-31',
     code: 'MONTHLY40',
   },
   {
@@ -28,7 +28,7 @@ export const offers: Offer[] = [
     discount: 'FREE PICKUP',
     image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80',
     badge: 'New Offer',
-    validUntil: '2025-09-30',
+    validUntil: '2026-09-30',
     code: 'AIRPORT25',
   },
   {
@@ -38,7 +38,7 @@ export const offers: Offer[] = [
     discount: '30% OFF',
     image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80',
     badge: 'Enterprise',
-    validUntil: '2025-12-31',
+    validUntil: '2026-12-31',
     code: 'CORP30',
   },
 ];

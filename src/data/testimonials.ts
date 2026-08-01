@@ -9,7 +9,7 @@ export const testimonials: Testimonial[] = [
     rating: 5,
     review:
       "The entire experience was seamless. I booked a BMW 5 Series for a week-long business trip in Dubai and it was ready the moment I landed. The car was immaculate and the pricing was genuinely better than going directly through the rental company.",
-    date: 'March 2025',
+    date: 'March 2026',
     tripType: 'Business Travel',
   },
   {
@@ -20,7 +20,7 @@ export const testimonials: Testimonial[] = [
     rating: 5,
     review:
       "We rented a Range Rover for our family holiday in London. Seven of us fit comfortably, and the vehicle was spotless. The booking took less than 3 minutes. I will never use another platform for car rentals.",
-    date: 'January 2025',
+    date: 'January 2026',
     tripType: 'Family Holiday',
   },
   {
@@ -31,7 +31,7 @@ export const testimonials: Testimonial[] = [
     rating: 5,
     review:
       "CarRentalDesk has become my go-to for corporate travel. The corporate packages are incredibly well-priced and the 24/7 support team is always available. Highly professional service from start to finish.",
-    date: 'February 2025',
+    date: 'February 2026',
     tripType: 'Corporate',
   },
   {
@@ -42,7 +42,7 @@ export const testimonials: Testimonial[] = [
     rating: 4,
     review:
       "Rented a Tesla Model 3 in Los Angeles for two weeks. The electric car suited the city perfectly and the range was more than enough for our daily drives. Booking was straightforward and the app kept us updated.",
-    date: 'April 2025',
+    date: 'April 2026',
     tripType: 'Tourism',
   },
   {
@@ -53,7 +53,7 @@ export const testimonials: Testimonial[] = [
     rating: 5,
     review:
       "As a frequent international traveler, I have tried every major rental platform. CarRentalDesk delivers a level of service that is simply unmatched. The verified partner network gives me confidence wherever I travel.",
-    date: 'May 2025',
+    date: 'May 2026',
     tripType: 'Business Travel',
   },
   {
@@ -64,7 +64,7 @@ export const testimonials: Testimonial[] = [
     rating: 5,
     review:
       "The weekend deal I found for a convertible in Sydney was unbelievable. We drove up the coast with the top down — it was a perfect experience from booking to return. Will absolutely book again.",
-    date: 'June 2025',
+    date: 'June 2026',
     tripType: 'Weekend Getaway',
   },
 ];

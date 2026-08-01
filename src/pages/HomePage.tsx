@@ -1,6 +1,7 @@
 import React from 'react';
 import Hero from '../components/home/Hero';
 import Stats from '../components/home/Stats';
+import TrustedPartners from '../components/home/TrustedPartners';
 import WhyChooseUs from '../components/home/WhyChooseUs';
 import PopularDestinations from '../components/home/PopularDestinations';
 import FeaturedVehicles from '../components/home/FeaturedVehicles';
@@ -15,6 +16,7 @@ const HomePage: React.FC = () => {
     <main>
       <Hero />
       <Stats />
+      <TrustedPartners />
       <WhyChooseUs />
       <PopularDestinations />
       <FeaturedVehicles />

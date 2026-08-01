@@ -4,7 +4,7 @@ const PrivacyPage: React.FC = () => (
   <main className="min-h-screen bg-surface pt-20">
     <div className="bg-gradient-hero py-16 text-center">
       <h1 className="text-4xl font-extrabold text-white mb-3">Privacy Policy</h1>
-      <p className="text-blue-100">Last updated: July 2025</p>
+      <p className="text-blue-100">Last updated: July 2026</p>
     </div>
     <div className="max-w-3xl mx-auto px-4 md:px-8 py-16">
       <div className="card p-8 prose prose-sm max-w-none">
@@ -31,7 +31,7 @@ const TermsPage: React.FC = () => (
   <main className="min-h-screen bg-surface pt-20">
     <div className="bg-gradient-hero py-16 text-center">
       <h1 className="text-4xl font-extrabold text-white mb-3">Terms of Service</h1>
-      <p className="text-blue-100">Last updated: July 2025</p>
+      <p className="text-blue-100">Last updated: July 2026</p>
     </div>
     <div className="max-w-3xl mx-auto px-4 md:px-8 py-16">
       <div className="card p-8">
