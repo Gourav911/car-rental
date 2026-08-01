@@ -224,7 +224,7 @@ const TrustedPartners: React.FC = () => {
               </div>
 
               {/* Bottom Feature & Action link */}
-              <div className="w-full pt-4 mt-2 border-t border-border/60 flex items-center justify-between text-xs">
+              {/* <div className="w-full pt-4 mt-2 border-t border-border/60 flex items-center justify-between text-xs">
                 <span className="text-muted font-medium flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-success-500 shrink-0" />
                   {partner.perk}
@@ -233,7 +233,7 @@ const TrustedPartners: React.FC = () => {
                   Compare
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </span>
-              </div>
+              </div> */}
             </motion.div>
           ))}
         </div>
