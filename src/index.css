@@ -210,3 +210,19 @@
   background-color: #2563EB;
   color: white;
 }
+
+/* Select Option Styling for Dark Forms */
+select option {
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
+  padding: 10px;
+}
+
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+

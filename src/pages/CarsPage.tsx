@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, Grid3X3, List, Star, Users, Fuel, Settings, ArrowRight, Heart, ChevronDown } from 'lucide-react';
 import { cars } from '../data/cars';
 import type { Car } from '../types';
+import { useOfferModal } from '../context/OfferModalContext';
 
 const brands = ['All', 'BMW', 'Tesla', 'Toyota', 'Land Rover', 'Porsche', 'Mercedes-Benz', 'Volkswagen', 'Audi', 'Lamborghini', 'Ferrari', 'Honda'];
 const categories = ['All', 'Economy', 'SUV', 'Luxury', 'Electric', 'Convertible', 'Van'];
@@ -18,6 +18,7 @@ const sortOptions = [
 
 const CarCard: React.FC<{ car: Car; layout: 'grid' | 'list' }> = ({ car, layout }) => {
   const [liked, setLiked] = useState(false);
+  const { openOfferModal } = useOfferModal();
 
   if (layout === 'list') {
     return (
@@ -56,9 +57,9 @@ const CarCard: React.FC<{ car: Car; layout: 'grid' | 'list' }> = ({ car, layout 
               <span className="text-3xl font-extrabold text-primary-900">${car.pricePerDay}</span>
               <span className="text-muted text-xs ml-1">/day</span>
             </div>
-            <Link to={`/cars/${car.id}`} className="btn-primary py-2.5 px-6 text-sm">
-              View Details <ArrowRight className="w-4 h-4" />
-            </Link>
+            <button onClick={openOfferModal} className="btn-primary py-2.5 px-6 text-sm cursor-pointer">
+              Book Now <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
@@ -101,9 +102,9 @@ const CarCard: React.FC<{ car: Car; layout: 'grid' | 'list' }> = ({ car, layout 
             <span className="text-2xl font-extrabold text-primary-900">${car.pricePerDay}</span>
             <span className="text-muted text-xs ml-1">/day</span>
           </div>
-          <Link to={`/cars/${car.id}`} className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl bg-secondary-600 text-white hover:bg-secondary-700 transition-all duration-200">
+          <button onClick={openOfferModal} className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl bg-secondary-600 text-white hover:bg-secondary-700 transition-all duration-200 cursor-pointer">
             Book Now <ArrowRight className="w-4 h-4" />
-          </Link>
+          </button>
         </div>
       </div>
     </div>

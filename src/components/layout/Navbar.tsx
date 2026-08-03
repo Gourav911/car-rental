@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Car, LogIn, UserPlus } from 'lucide-react';
+import { Menu, X, Car } from 'lucide-react';
 import { useScrolled } from '../../hooks';
+import { useOfferModal } from '../../context/OfferModalContext';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -18,6 +19,7 @@ const Navbar: React.FC = () => {
   const scrolled = useScrolled(60);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { openOfferModal } = useOfferModal();
 
   const isHome = location.pathname === '/';
   const isActive = (href: string) =>
@@ -69,35 +71,13 @@ const Navbar: React.FC = () => {
 
         {/* Desktop CTAs */}
         <div className="hidden lg:flex items-center gap-3">
-          <Link
-            to="/login"
-            className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2.5 rounded-xl transition-all duration-200 ${
-              scrolled || !isHome
-                ? 'text-gray-700 hover:bg-gray-100'
-                : 'text-white hover:bg-white/10'
-            }`}
-          >
-            <LogIn className="w-4 h-4" />
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className={`flex items-center gap-1.5 text-sm font-medium px-4 py-2.5 rounded-xl border transition-all duration-200 ${
-              scrolled || !isHome
-                ? 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                : 'border-white/30 text-white hover:bg-white/10'
-            }`}
-          >
-            <UserPlus className="w-4 h-4" />
-            Register
-          </Link>
-          <Link
-            to="/cars"
-            className="btn-primary text-sm py-2.5 px-5"
+          <button
+            onClick={openOfferModal}
+            className="btn-primary text-sm py-2.5 px-5 cursor-pointer"
             id="navbar-book-now"
           >
             Book Now
-          </Link>
+          </button>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -138,27 +118,15 @@ const Navbar: React.FC = () => {
                 </Link>
               ))}
               <div className="pt-3 border-t border-border flex gap-2">
-                <Link
-                  to="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex-1 btn-ghost text-center text-sm border border-border rounded-xl py-2.5"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex-1 btn-ghost text-center text-sm border border-border rounded-xl py-2.5"
-                >
-                  Register
-                </Link>
-                <Link
-                  to="/cars"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex-1 btn-primary text-center text-sm py-2.5"
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openOfferModal();
+                  }}
+                  className="w-full btn-primary text-center text-sm py-2.5 cursor-pointer"
                 >
                   Book Now
-                </Link>
+                </button>
               </div>
             </div>
           </motion.div>

@@ -125,8 +125,8 @@ const Footer: React.FC = () => {
               <a href="mailto:support@carrentaldesk.net" className="flex items-center gap-2 text-blue-200 hover:text-white text-xs transition-colors">
                 <Mail className="w-3.5 h-3.5" /> support@carrentaldesk.net
               </a>
-              <a href="tel:+18005551234" className="flex items-center gap-2 text-blue-200 hover:text-white text-xs transition-colors">
-                <Phone className="w-3.5 h-3.5" /> +1 800 555 1234
+              <a href="tel:+18663815675" className="flex items-center gap-2 text-blue-200 hover:text-white text-xs transition-colors">
+                <Phone className="w-3.5 h-3.5" /> +18663815675
               </a>
             </div>
           </div>

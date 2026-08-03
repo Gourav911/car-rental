@@ -19,7 +19,7 @@ const steps = [
     step: '02',
     title: 'Choose & Customize',
     description:
-      'Filter by vehicle type, features, price, and rating. Add extras like GPS, child seats, or full insurance — all in a single checkout.',
+      'Filter by vehicle type, features, price, and rating. Add extras like GPS, child seats, or full insurance  all in a single checkout.',
     color: 'from-accent-500 to-yellow-400',
     bg: 'bg-accent-50',
     iconColor: 'text-accent-500',
@@ -29,7 +29,7 @@ const steps = [
     step: '03',
     title: 'Arrive & Drive',
     description:
-      'Present your booking confirmation and license at pickup — your vehicle will be ready and waiting. No hidden fees. Just open roads ahead.',
+      'Present your booking confirmation and license at pickup  your vehicle will be ready and waiting. No hidden fees. Just open roads ahead.',
     color: 'from-success-500 to-emerald-400',
     bg: 'bg-success-50',
     iconColor: 'text-success-500',

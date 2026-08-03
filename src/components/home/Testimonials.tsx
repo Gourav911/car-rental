@@ -26,7 +26,7 @@ const Testimonials: React.FC = () => {
           badge="Customer Stories"
           title="Trusted by Millions of "
           highlight="Happy Travelers"
-          subtitle="Don't take our word for it — here's what our community of drivers has to say."
+          subtitle="Don't take our word for it  here's what our community of drivers has to say."
         />
 
         <Swiper

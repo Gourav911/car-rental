@@ -30,7 +30,7 @@ const LocationsPage: React.FC = () => {
             Cars Available in <span className="text-gradient-amber">600+ Cities</span>
           </h1>
           <p className="text-blue-100 text-lg max-w-xl mx-auto">
-            From metropolitan hubs to island getaways — we've got your rental covered, wherever you land.
+            From metropolitan hubs to island getaways  we've got your rental covered, wherever you land.
           </p>
         </div>
       </div>
@@ -99,7 +99,7 @@ const LocationsPage: React.FC = () => {
             <div className="flex-1">
               <h3 className="text-xl font-bold text-primary-900 mb-2">Airport Pickup Available at 200+ Locations</h3>
               <p className="text-muted text-sm leading-relaxed">
-                Land and drive. Book your airport pickup 48 hours ahead and your vehicle will be ready the moment you clear arrivals — with no extra waiting fees.
+                Land and drive. Book your airport pickup 48 hours ahead and your vehicle will be ready the moment you clear arrivals  with no extra waiting fees.
               </p>
             </div>
             <Link to="/cars" className="btn-primary flex-shrink-0">

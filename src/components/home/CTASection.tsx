@@ -28,7 +28,7 @@ const CTASection: React.FC = () => {
         >
           <span className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-xs font-bold px-4 py-2 rounded-full mb-6">
             <Sparkles className="w-3.5 h-3.5 text-accent-400" />
-            Book Today — Drive Tomorrow
+            Book Today  Drive Tomorrow
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6">
             Ready for Your{' '}

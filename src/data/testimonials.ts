@@ -63,7 +63,7 @@ export const testimonials: Testimonial[] = [
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&q=80',
     rating: 5,
     review:
-      "The weekend deal I found for a convertible in Sydney was unbelievable. We drove up the coast with the top down — it was a perfect experience from booking to return. Will absolutely book again.",
+      "The weekend deal I found for a convertible in Sydney was unbelievable. We drove up the coast with the top down  it was a perfect experience from booking to return. Will absolutely book again.",
     date: 'June 2026',
     tripType: 'Weekend Getaway',
   },

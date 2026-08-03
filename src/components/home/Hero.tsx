@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Car, Search, ChevronDown, ArrowRight } from 'lucide-react';
+import { MapPin, Calendar, Users, Car, Search, ChevronDown, ArrowRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { submitBookingToGoogleSheets } from '../../services/googleSheets';
 
 const vehicleTypes = ['Any Type', 'Economy', 'SUV', 'Luxury', 'Electric', 'Convertible', 'Van'];
 const popularCities = ['Dubai', 'London', 'New York', 'Paris', 'Tokyo', 'Los Angeles', 'Sydney', 'Singapore'];
 
 const Hero: React.FC = () => {
-  const navigate = useNavigate();
   const [form, setForm] = useState({
     pickupLocation: '',
     dropoffLocation: '',
@@ -18,9 +17,67 @@ const Hero: React.FC = () => {
   });
   const [sameLocation, setSameLocation] = useState(true);
 
-  const handleSearch = (e: React.FormEvent) => {
+  // Form submission state
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/cars');
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    // Validation rules
+    if (!form.pickupLocation.trim()) {
+      setErrorMessage('Pickup Location is required.');
+      return;
+    }
+    if (!form.pickupDate) {
+      setErrorMessage('Pickup Date is required.');
+      return;
+    }
+    if (!form.returnDate) {
+      setErrorMessage('Return Date is required.');
+      return;
+    }
+    if (new Date(form.returnDate) < new Date(form.pickupDate)) {
+      setErrorMessage('Return Date must not be earlier than Pickup Date.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const returnType = sameLocation ? 'Same Location' : 'Different Location';
+      const response = await submitBookingToGoogleSheets({
+        pickupLocation: form.pickupLocation,
+        dropoffLocation: !sameLocation ? form.dropoffLocation : '',
+        pickupDate: form.pickupDate,
+        returnDate: form.returnDate,
+        returnType: returnType,
+        driverAge: form.driverAge,
+        vehicleType: form.vehicleType,
+      });
+
+      if (response.success) {
+        setSuccessMessage(response.message || 'Booking request submitted successfully!');
+        // Clear form on success
+        setForm({
+          pickupLocation: '',
+          dropoffLocation: '',
+          pickupDate: '',
+          returnDate: '',
+          driverAge: '25+',
+          vehicleType: 'Any Type',
+        });
+      } else {
+        setErrorMessage(response.message || 'Failed to submit booking request.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'An error occurred while submitting your booking.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,6 +180,21 @@ const Hero: React.FC = () => {
             </button>
           </div>
 
+          {/* Feedback messages */}
+          {successMessage && (
+            <div className="mb-4 p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+              <span>{successMessage}</span>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-sm flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSearch}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Pickup Location */}
@@ -140,6 +212,7 @@ const Hero: React.FC = () => {
                     value={form.pickupLocation}
                     onChange={(e) => setForm({ ...form, pickupLocation: e.target.value })}
                     className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all"
+                    disabled={loading}
                     required
                   />
                   <datalist id="pickup-cities">
@@ -164,6 +237,7 @@ const Hero: React.FC = () => {
                       value={form.dropoffLocation}
                       onChange={(e) => setForm({ ...form, dropoffLocation: e.target.value })}
                       className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-accent-400 focus:bg-white/15 transition-all"
+                      disabled={loading}
                     />
                     <datalist id="dropoff-cities">
                       {popularCities.map((city) => <option key={city} value={city} />)}
@@ -186,6 +260,7 @@ const Hero: React.FC = () => {
                     onChange={(e) => setForm({ ...form, pickupDate: e.target.value })}
                     min={new Date().toISOString().split('T')[0]}
                     className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all [color-scheme:dark]"
+                    disabled={loading}
                     required
                   />
                 </div>
@@ -205,6 +280,7 @@ const Hero: React.FC = () => {
                     onChange={(e) => setForm({ ...form, returnDate: e.target.value })}
                     min={form.pickupDate || new Date().toISOString().split('T')[0]}
                     className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-accent-400 focus:bg-white/15 transition-all [color-scheme:dark]"
+                    disabled={loading}
                     required
                   />
                 </div>
@@ -222,10 +298,11 @@ const Hero: React.FC = () => {
                     value={form.driverAge}
                     onChange={(e) => setForm({ ...form, driverAge: e.target.value })}
                     className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-8 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all appearance-none [color-scheme:dark]"
+                    disabled={loading}
                   >
-                    <option value="18-20">18–20 years</option>
-                    <option value="21-24">21–24 years</option>
-                    <option value="25+">25+ years</option>
+                    <option value="18-20" className="bg-slate-900 text-white py-2">18–20 years</option>
+                    <option value="21-24" className="bg-slate-900 text-white py-2">21–24 years</option>
+                    <option value="25+" className="bg-slate-900 text-white py-2">25+ years</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                 </div>
@@ -243,8 +320,9 @@ const Hero: React.FC = () => {
                     value={form.vehicleType}
                     onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}
                     className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-8 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all appearance-none [color-scheme:dark]"
+                    disabled={loading}
                   >
-                    {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
+                    {vehicleTypes.map((v) => <option key={v} value={v} className="bg-slate-900 text-white py-2">{v}</option>)}
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                 </div>
@@ -256,11 +334,21 @@ const Hero: React.FC = () => {
               <button
                 type="submit"
                 id="hero-search-btn"
-                className="w-full md:w-auto btn-accent text-base py-4 px-12 gap-3 font-bold"
+                disabled={loading}
+                className="w-full md:w-auto btn-accent text-base py-4 px-12 gap-3 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Search className="w-5 h-5" />
-                Search Available Cars
-                <ArrowRight className="w-5 h-5" />
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5" />
+                    Search Available Cars
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
             </div>
           </form>

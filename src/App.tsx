@@ -10,9 +10,9 @@ import DealsPage from './pages/DealsPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import FAQPage from './pages/FAQPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 import { PrivacyPage, TermsPage } from './pages/LegalPages';
+import { OfferModalProvider } from './context/OfferModalContext';
+import FloatingChatWidget from './components/FloatingChatWidget';
 
 // Scroll to top on route change
 const ScrollToTop: React.FC = () => {
@@ -25,16 +25,14 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
-// Layout Wrapper to omit Navbar and Footer on Auth pages
+// Layout Wrapper
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
-  const isAuthPage = ['/login', '/register'].includes(location.pathname);
-
   return (
     <>
-      {!isAuthPage && <Navbar />}
+      <Navbar />
       {children}
-      {!isAuthPage && <Footer />}
+      <Footer />
+      <FloatingChatWidget />
     </>
   );
 };
@@ -42,24 +40,24 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const App: React.FC = () => {
   return (
     <Router>
-      <ScrollToTop />
-      <Layout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/cars" element={<CarsPage />} />
-          <Route path="/cars/:id" element={<CarDetailPage />} />
-          <Route path="/locations" element={<LocationsPage />} />
-          <Route path="/deals" element={<DealsPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="*" element={<HomePage />} />
-        </Routes>
-      </Layout>
+      <OfferModalProvider>
+        <ScrollToTop />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/cars" element={<CarsPage />} />
+            <Route path="/cars/:id" element={<CarDetailPage />} />
+            <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/deals" element={<DealsPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="*" element={<HomePage />} />
+          </Routes>
+        </Layout>
+      </OfferModalProvider>
     </Router>
   );
 };

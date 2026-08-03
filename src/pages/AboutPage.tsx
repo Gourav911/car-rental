@@ -54,7 +54,7 @@ const AboutPage: React.FC = () => {
               </h2>
               <div className="space-y-4 text-muted leading-relaxed">
                 <p>
-                  In 2019, our founding team — frustrated by opaque rental pricing, hidden fees, and unreliable partners — set out to build the platform they wished existed.
+                  In 2019, our founding team  frustrated by opaque rental pricing, hidden fees, and unreliable partners  set out to build the platform they wished existed.
                 </p>
                 <p>
                   Today, CarRentalDesk connects millions of travelers with 80+ vetted rental companies across 600 cities worldwide. We've processed over $500M in bookings and earned an industry-leading 4.9-star average.

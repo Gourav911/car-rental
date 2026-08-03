@@ -68,9 +68,9 @@ export const cars: Car[] = [
     name: 'Range Rover Sport',
     brand: 'Land Rover',
     category: 'SUV',
-    image: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1679506640602-0144b3bb5053?w=800&q=80',
     images: [
-      'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&q=80',
+      'https://images.unsplash.com/photo-1679506640602-0144b3bb5053?w=800&q=80',
     ],
     transmission: 'Automatic',
     seats: 7,

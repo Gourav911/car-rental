@@ -27,7 +27,7 @@ export const faqs: FAQ[] = [
     category: 'Insurance',
     question: 'Does my personal auto insurance or credit card cover rentals?',
     answer:
-      'Many credit cards and personal auto insurance policies provide rental coverage — check with your provider before adding extra coverage. We recommend Super CDW for maximum peace of mind, particularly for luxury vehicles.',
+      'Many credit cards and personal auto insurance policies provide rental coverage  check with your provider before adding extra coverage. We recommend Super CDW for maximum peace of mind, particularly for luxury vehicles.',
   },
   {
     id: 'faq-005',

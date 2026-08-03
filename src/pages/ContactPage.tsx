@@ -17,7 +17,7 @@ const ContactPage: React.FC = () => {
       <div className="bg-gradient-hero py-20 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">Get in Touch</h1>
         <p className="text-blue-100 text-lg max-w-xl mx-auto px-4">
-          Our team is ready to help with anything — from booking assistance to corporate inquiries.
+          Our team is ready to help with anything  from booking assistance to corporate inquiries.
         </p>
       </div>
 
@@ -30,7 +30,7 @@ const ContactPage: React.FC = () => {
                 <h2 className="text-2xl font-bold text-primary-900 mb-6">Contact Information</h2>
                 {[
                   { icon: Mail, title: 'Email Us', value: 'support@carrentaldesk.net', sub: 'We reply within 2 hours' },
-                  { icon: Phone, title: 'Call Us', value: '+1 800 555 1234', sub: '24/7 Support Line' },
+                  { icon: Phone, title: 'Call Us', value: '+18663815675', sub: '24/7 Support Line' },
                   { icon: MapPin, title: 'Head Office', value: '350 Fifth Avenue, New York, NY 10118', sub: 'United States' },
                 ].map(({ icon: Icon, title, value, sub }) => (
                   <div key={title} className="card p-5 flex items-start gap-4 mb-4">

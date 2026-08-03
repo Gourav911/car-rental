@@ -24,7 +24,7 @@ export const offers: Offer[] = [
   {
     id: 'offer-003',
     title: 'Airport Express',
-    description: 'Fly in and drive off. Book airport pickup 48 hours in advance and we waive the pickup surcharge — a saving of up to $35.',
+    description: 'Fly in and drive off. Book airport pickup 48 hours in advance and we waive the pickup surcharge  a saving of up to $35.',
     discount: 'FREE PICKUP',
     image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80',
     badge: 'New Offer',

@@ -18,7 +18,7 @@ const RegisterPage: React.FC = () => {
           <blockquote className="text-white text-2xl font-bold italic leading-relaxed mb-4">
             "The best journeys answer questions that in the beginning you didn't even think to ask."
           </blockquote>
-          <cite className="text-blue-200 text-sm">— Jeff Johnson</cite>
+          <cite className="text-blue-200 text-sm"> Jeff Johnson</cite>
         </div>
       </div>
 

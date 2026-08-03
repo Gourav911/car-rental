@@ -5,11 +5,13 @@ import { Star, Users, Fuel, Settings, ArrowRight, Heart } from 'lucide-react';
 import { cars } from '../../data/cars';
 import type { Car } from '../../types';
 import SectionHeader from '../shared/SectionHeader';
+import { useOfferModal } from '../../context/OfferModalContext';
 
 const categories = ['All', 'Economy', 'SUV', 'Luxury', 'Electric', 'Convertible'];
 
 const CarCard: React.FC<{ car: Car; index: number }> = ({ car, index }) => {
   const [liked, setLiked] = useState(false);
+  const { openOfferModal } = useOfferModal();
 
   return (
     <motion.div
@@ -38,9 +40,8 @@ const CarCard: React.FC<{ car: Car; index: number }> = ({ car, index }) => {
         {/* Wishlist */}
         <button
           onClick={() => setLiked(!liked)}
-          className={`absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${
-            liked ? 'bg-red-500 text-white' : 'bg-white/80 text-gray-500 hover:bg-white'
-          }`}
+          className={`absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center backdrop-blur-sm transition-all duration-200 ${liked ? 'bg-red-500 text-white' : 'bg-white/80 text-gray-500 hover:bg-white'
+            }`}
           aria-label="Add to wishlist"
         >
           <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
@@ -88,18 +89,17 @@ const CarCard: React.FC<{ car: Car; index: number }> = ({ car, index }) => {
             <span className="text-2xl font-extrabold text-primary-900">${car.pricePerDay}</span>
             <span className="text-muted text-xs ml-1">/day</span>
           </div>
-          <Link
-            to={`/cars/${car.id}`}
-            className={`flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 ${
-              car.available
+          <button
+            onClick={openOfferModal}
+            className={`flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${car.available
                 ? 'bg-secondary-600 text-white hover:bg-secondary-700 hover:shadow-glow'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none'
-            }`}
+              }`}
             id={`book-${car.id}`}
           >
             {car.available ? 'Book Now' : 'Unavailable'}
             {car.available && <ArrowRight className="w-4 h-4" />}
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>
@@ -120,7 +120,7 @@ const FeaturedVehicles: React.FC = () => {
           badge="Featured Vehicles"
           title="Find Your "
           highlight="Perfect Ride"
-          subtitle="From budget-friendly economy cars to exotic supercars — every vehicle meticulously maintained and ready for the road."
+          subtitle="From budget-friendly economy cars to exotic supercars  every vehicle meticulously maintained and ready for the road."
         />
 
         {/* Category Filters */}
@@ -130,11 +130,10 @@ const FeaturedVehicles: React.FC = () => {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               id={`filter-${cat.toLowerCase()}`}
-              className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 ${
-                activeCategory === cat
+              className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 ${activeCategory === cat
                   ? 'bg-secondary-600 text-white shadow-glow'
                   : 'bg-white text-gray-600 border border-border hover:border-secondary-200 hover:text-secondary-600'
-              }`}
+                }`}
             >
               {cat}
             </button>

@@ -26,7 +26,7 @@ const features = [
     icon: Headphones,
     title: '24/7 Dedicated Support',
     description:
-      'Our multilingual support team is available around the clock via live chat, phone, or email — wherever your journey takes you.',
+      'Our multilingual support team is available around the clock via live chat, phone, or email  wherever your journey takes you.',
     color: 'from-success-500 to-emerald-400',
     bg: 'bg-success-50',
     iconColor: 'text-success-500',
@@ -50,7 +50,7 @@ const WhyChooseUs: React.FC = () => {
           badge="Why CarRentalDesk"
           title="Everything You Need, "
           highlight="Nothing You Don't"
-          subtitle="We've built the simplest, most transparent car rental experience on the planet — because travel should be exciting, not complicated."
+          subtitle="We've built the simplest, most transparent car rental experience on the planet  because travel should be exciting, not complicated."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
