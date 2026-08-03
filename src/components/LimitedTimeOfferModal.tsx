@@ -154,7 +154,7 @@ export const LimitedTimeOfferModal: React.FC<{
                 className="relative inline-flex items-center justify-center gap-2.5 w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-lg py-4 px-6 rounded-2xl shadow-lg shadow-emerald-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-emerald-400 animate-pulse hover:animate-none"
               >
                 <Phone className="w-5 h-5 fill-current" />
-                <span>Call Now</span>
+                <span>Call Now +18663815675</span>
               </a>
 
               <div className="mt-4 flex items-center justify-center gap-1 text-[11px] text-white/50">
