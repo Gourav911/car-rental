@@ -1,22 +1,13 @@
 /**
  * Google Apps Script Backend Code for Car Rental Application
  * Handles both main booking form & floating chat inquiry form submissions.
- * 
- * Instructions:
- * 1. Open Google Sheets (or create a new sheet).
- * 2. Click Extensions > Apps Script.
- * 3. Replace all existing code in Code.gs with this script.
- * 4. Update SPREADSHEET_ID and SHEET_NAME if needed (or leave empty to target active sheet).
- * 5. Click Deploy > New deployment.
- * 6. Select type: "Web app".
- * 7. Set "Execute as": "Me".
- * 8. Set "Who has access": "Anyone".
- * 9. Click Deploy and copy the Web App URL.
- * 10. Paste the Web App URL into `src/config/google.json` under `"scriptUrl"`.
+ * Includes GmailApp fallback for seamless email notifications.
  */
 
-var SPREADSHEET_ID = ""; // Leave blank if attached to the spreadsheet directly
+// Configuration
+var SPREADSHEET_ID = ""; // Leave blank if attached to spreadsheet directly
 var SHEET_NAME = "Bookings";
+var NOTIFICATION_EMAIL = "abhishekchawala793@gmail.com"; // Replace with your email address
 
 function doPost(e) {
   try {
@@ -104,7 +95,34 @@ function doPost(e) {
       userAgent
     ];
 
+    // Store in sheet
     sheet.appendRow(newRow);
+
+    // Send instant email notification
+    if (NOTIFICATION_EMAIL && NOTIFICATION_EMAIL.trim() !== "") {
+      try {
+        sendEmailNotification({
+          recipient: NOTIFICATION_EMAIL,
+          type: submissionType,
+          timestamp: timestamp,
+          pickupLocation: pickupLocation,
+          pickupDate: pickupDate,
+          returnDate: returnDate,
+          returnType: returnType,
+          driverAge: driverAge,
+          vehicleType: vehicleType,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          subject: subject,
+          bookingNumber: bookingNumber,
+          browser: browser,
+          os: operatingSystem
+        });
+      } catch (emailErr) {
+        Logger.log("Email notification error: " + emailErr.toString());
+      }
+    }
 
     return createJsonResponse({
       status: "success",
@@ -117,6 +135,48 @@ function doPost(e) {
       message: error.toString()
     });
   }
+}
+
+function sendEmailNotification(d) {
+  var mailSubject = "🚨 New " + d.type + " Notification - CarRentalDesk";
+  var htmlBody = ""
+    + "<div style='font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;'>"
+    + "<h2 style='color: #0F172A; border-bottom: 2px solid #2563EB; padding-bottom: 10px;'>New Website " + d.type + " Received</h2>"
+    + "<p><strong>Time:</strong> " + d.timestamp + "</p>"
+    + "<table style='width: 100%; border-collapse: collapse; margin-top: 15px;'>"
+    + (d.pickupLocation !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pickup Location</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupLocation + "</td></tr>" : "")
+    + (d.pickupDate !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pickup Date</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupDate + "</td></tr>" : "")
+    + (d.returnDate !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Date</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnDate + "</td></tr>" : "")
+    + (d.returnType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnType + "</td></tr>" : "")
+    + (d.driverAge !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Age</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.driverAge + "</td></tr>" : "")
+    + (d.vehicleType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Vehicle Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.vehicleType + "</td></tr>" : "")
+    + (d.firstName !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Name</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.firstName + " " + d.lastName + "</td></tr>" : "")
+    + (d.email !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Customer Email</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.email + "</td></tr>" : "")
+    + (d.subject !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Subject</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.subject + "</td></tr>" : "")
+    + (d.bookingNumber !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Booking Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.bookingNumber + "</td></tr>" : "")
+    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Browser / OS</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.browser + " on " + d.os + "</td></tr>"
+    + "</table>"
+    + "<p style='margin-top: 20px; font-size: 12px; color: #64748b;'>CarRentalDesk Automated System</p>"
+    + "</div>";
+
+  try {
+    MailApp.sendEmail({
+      to: d.recipient,
+      subject: mailSubject,
+      htmlBody: htmlBody
+    });
+  } catch (e1) {
+    GmailApp.sendEmail(d.recipient, mailSubject, "", { htmlBody: htmlBody });
+  }
+}
+
+// Dedicated function to trigger one-click Google account authorization
+function authorizeEmailPermissions() {
+  var me = Session.getActiveUser().getEmail();
+  if (!me) {
+    me = NOTIFICATION_EMAIL;
+  }
+  MailApp.sendEmail(me, "Permission Verification - CarRentalDesk", "Email permissions have been successfully granted!");
 }
 
 function doGet(e) {

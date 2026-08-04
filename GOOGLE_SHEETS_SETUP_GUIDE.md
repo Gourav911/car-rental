@@ -1,13 +1,21 @@
-# Google Sheets & Apps Script Setup Guide
+# Google Sheets & Instant Email Notification Setup Guide
 
-Follow this step-by-step guide to connect your Car Rental application form data (Booking Form + Support Chat Drawer) to Google Sheets.
+Follow this step-by-step guide to receive **instant email notifications** for every submission while storing form data (Booking Form + Support Chat Drawer) in Google Sheets.
+
+---
+
+## How It Works
+
+Google Apps Script uses built-in Google services (`MailApp` & `SpreadsheetApp`). When a customer fills out any form on your website:
+1. The submission is automatically saved as a new row in your **Google Sheet**.
+2. An **instant HTML email notification** with all submission details is sent directly to your inbox.
 
 ---
 
 ## Step 1: Create a Google Sheet
 
 1. Go to [Google Sheets](https://sheets.new) and create a new blank spreadsheet.
-2. Name the spreadsheet: **`Car Rental Bookings`** (or any name you prefer).
+2. Name the spreadsheet: **`Car Rental Bookings`**.
 
 ---
 
@@ -19,14 +27,16 @@ Follow this step-by-step guide to connect your Car Rental application form data 
 
 ---
 
-## Step 3: Add the Backend Script (`Code.gs`)
+## Step 3: Add the Script (`Code.gs`)
 
 1. Delete any default code in the `Code.gs` editor.
-2. Open the [`google-apps-script/Code.gs`](file:///d:/projects/carrental/google-apps-script/Code.gs) file from this project and copy its entire contents:
+2. Copy all contents from [`google-apps-script/Code.gs`](file:///d:/projects/carrental/google-apps-script/Code.gs):
 
 ```javascript
-var SPREADSHEET_ID = ""; // Leave blank if attached directly to the target spreadsheet
+// Configuration
+var SPREADSHEET_ID = ""; // Leave blank if attached directly to spreadsheet
 var SHEET_NAME = "Bookings";
+var NOTIFICATION_EMAIL = "support@carrentaldesk.net"; // CHANGE THIS to your email to receive instant alerts
 
 function doPost(e) {
   try {
@@ -49,7 +59,6 @@ function doPost(e) {
       sheet = ss.insertSheet(SHEET_NAME);
     }
 
-    // Automatically create headers if sheet is empty
     if (sheet.getLastRow() === 0) {
       var headers = [
         "Timestamp",
@@ -115,9 +124,31 @@ function doPost(e) {
 
     sheet.appendRow(newRow);
 
+    // Send instant email notification
+    if (NOTIFICATION_EMAIL && NOTIFICATION_EMAIL.trim() !== "") {
+      sendEmailNotification({
+        recipient: NOTIFICATION_EMAIL,
+        type: submissionType,
+        timestamp: timestamp,
+        pickupLocation: pickupLocation,
+        pickupDate: pickupDate,
+        returnDate: returnDate,
+        returnType: returnType,
+        driverAge: driverAge,
+        vehicleType: vehicleType,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        subject: subject,
+        bookingNumber: bookingNumber,
+        browser: browser,
+        os: operatingSystem
+      });
+    }
+
     return createJsonResponse({
       status: "success",
-      message: "Submitted successfully to Google Sheets!"
+      message: "Thank you! Your request has been received. Our team will contact you shortly to confirm your booking."
     });
 
   } catch (error) {
@@ -126,6 +157,35 @@ function doPost(e) {
       message: error.toString()
     });
   }
+}
+
+function sendEmailNotification(d) {
+  var mailSubject = "🚨 New " + d.type + " Notification - CarRentalDesk";
+  var htmlBody = ""
+    + "<div style='font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;'>"
+    + "<h2 style='color: #0F172A; border-bottom: 2px solid #2563EB; padding-bottom: 10px;'>New Website " + d.type + " Received</h2>"
+    + "<p><strong>Time:</strong> " + d.timestamp + "</p>"
+    + "<table style='width: 100%; border-collapse: collapse; margin-top: 15px;'>"
+    + (d.pickupLocation !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pickup Location</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupLocation + "</td></tr>" : "")
+    + (d.pickupDate !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pickup Date</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupDate + "</td></tr>" : "")
+    + (d.returnDate !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Date</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnDate + "</td></tr>" : "")
+    + (d.returnType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnType + "</td></tr>" : "")
+    + (d.driverAge !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Age</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.driverAge + "</td></tr>" : "")
+    + (d.vehicleType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Vehicle Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.vehicleType + "</td></tr>" : "")
+    + (d.firstName !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Name</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.firstName + " " + d.lastName + "</td></tr>" : "")
+    + (d.email !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Customer Email</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.email + "</td></tr>" : "")
+    + (d.subject !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Subject</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.subject + "</td></tr>" : "")
+    + (d.bookingNumber !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Booking Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.bookingNumber + "</td></tr>" : "")
+    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Browser / OS</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.browser + " on " + d.os + "</td></tr>"
+    + "</table>"
+    + "<p style='margin-top: 20px; font-size: 12px; color: #64748b;'>CarRentalDesk Automated System</p>"
+    + "</div>";
+
+  MailApp.sendEmail({
+    to: d.recipient,
+    subject: mailSubject,
+    htmlBody: htmlBody
+  });
 }
 
 function doGet(e) {
@@ -141,45 +201,26 @@ function createJsonResponse(responseObject) {
 }
 ```
 
-3. Click the **Save** icon (💾) or press `Ctrl + S`.
+3. Update line 4:
+   ```javascript
+   var NOTIFICATION_EMAIL = "your-email@example.com";
+   ```
+4. Click **Save** (`Ctrl + S`).
 
 ---
 
-## Step 4: Deploy as Web App
+## Step 4: Deploy / Re-Deploy as Web App
 
-1. In the top-right corner of Apps Script, click **Deploy** > **New deployment**.
-2. Click the gear icon next to **Select type** and choose **Web app**.
-3. Fill in deployment settings:
-   - **Description**: `Car Rental Backend API`
-   - **Execute as**: **Me** (your Google account)
-   - **Who has access**: **Anyone** *(Crucial for CORS-free public submissions)*
-4. Click **Deploy**.
-5. Grant permissions if prompted by Google (*Click "Advanced" > "Go to Untitled project (unsafe)"*).
-6. Copy the generated **Web App URL** (e.g. `https://script.google.com/macros/s/AKfycbx.../exec`).
+1. Click **Deploy** > **New deployment** (or **Manage deployments** > **Edit** > **New version**).
+2. Select type: **Web app**.
+3. Set **Execute as**: **Me**.
+4. Set **Who has access**: **Anyone**.
+5. Click **Deploy**.
+6. When prompted for authorization, approve Google's email permissions.
+7. Copy the **Web App URL** and paste it into [`src/config/google.json`](file:///d:/projects/carrental/src/config/google.json).
 
 ---
 
-## Step 5: Configure Application
+## Step 5: Test Instant Email Alerts
 
-1. Open [`src/config/google.json`](file:///d:/projects/carrental/src/config/google.json) in your project workspace.
-2. Paste your Web App URL into `"scriptUrl"`:
-
-```json
-{
-  "spreadsheetId": "YOUR_OPTIONAL_SPREADSHEET_ID",
-  "sheetName": "Bookings",
-  "serviceAccountEmail": "",
-  "privateKey": "",
-  "scriptUrl": "https://script.google.com/macros/s/YOUR_APPS_SCRIPT_DEPLOYMENT_ID/exec",
-  "useGoogleAppsScript": true
-}
-```
-
----
-
-## Step 6: Test Form Submissions
-
-1. Run the local application with `npm run dev`.
-2. Submit the **Booking Form** on the home hero section.
-3. Open the **Floating Chat Drawer** at the bottom-right and submit an inquiry message.
-4. Check your Google Sheet  rows will automatically populate with header styling and timestamps.
+Submit any form on your website. Within seconds, you will receive a formatted notification email with the booking details!
