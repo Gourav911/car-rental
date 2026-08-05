@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+@import "tailwindcss";
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f8fafc;color:#0f172a;font-family:Manrope,Arial,sans-serif;font-size:15px;overflow-x:hidden}
+.container{width:min(1160px,calc(100% - 40px));margin:auto}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;background:none;color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #93c5fd;outline-offset:2px;border-radius:8px}
+
+/* Header & Nav */
+.nav{height:76px;background:rgba(248,250,252,.92);backdrop-filter:blur(16px);position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(15,23,42,.06)}
+.nav-inner{height:100%;width:min(1160px,calc(100% - 40px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-weight:800;font-size:19px;letter-spacing:-1px;text-decoration:none;color:#0f172a;display:flex;align-items:center;gap:3px}
+.logo>span:first-child{height:31px;width:31px;border-radius:10px;background:#2563eb;color:white;display:grid;place-items:center;margin-right:5px}
+.logo>span:last-child{color:#2563eb}
+.desktop-nav{display:flex;gap:26px;margin-left:auto}
+.desktop-nav button{font-size:13px;font-weight:700;color:#475569;transition:color .15s}
+.desktop-nav button:hover{color:#2563eb}
+.nav-controls{display:flex;align-items:center;gap:12px;margin-left:16px}
+
+/* Currency & Wishlist Buttons */
+.currency-selector{position:relative}
+.currency-btn{display:flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid #e2e8f0;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:800;color:#334155}
+.currency-dropdown{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 12px 30px rgba(15,23,42,.12);padding:6px;min-width:130px;z-index:50}
+.currency-dropdown button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;color:#475569;text-align:left}
+.currency-dropdown button:hover,.currency-dropdown button.active{background:#eff6ff;color:#2563eb}
+
+.wishlist-pill-btn{position:relative;background:#eff6ff;color:#2563eb;border:1px solid #dbeafe;padding:7px 12px;border-radius:10px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px}
+.wishlist-count{background:#2563eb;color:#fff;font-size:10px;height:18px;width:18px;border-radius:50%;display:grid;place-items:center;font-weight:800}
+
+.nav-cta,.cta-button{background:#0f172a;color:#fff;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;display:flex;gap:7px;align-items:center;transition:background .2s}
+.nav-cta:hover,.cta-button:hover{background:#1e293b}
+.menu{display:none}
+.mobile-nav{display:none}
+
+/* Hero Section */
+.hero{overflow:visible;background:linear-gradient(112deg,#edf4ff 0%,#f8fafc 48%,#edf3ff 100%);padding:60px 0 54px;position:relative;z-index:5}
+.hero-orbs-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-grid{display:grid;grid-template-columns:1fr 1.05fr;align-items:center;gap:50px;min-height:380px;position:relative;z-index:1}
+.eyebrow{color:#2563eb;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.hero h1,.section-heading h2,.process h2,.cta h2,.inner-page h1{font-size:clamp(38px,4.5vw,68px);letter-spacing:-3px;line-height:1.04;margin:0;font-weight:800}
+.hero h1 i,.section-heading h2 i,.process h2 i,.cta h2 i,.inner-page h1 i{font-family:'Playfair Display',serif;font-weight:600}
+.hero-copy{color:#475569;line-height:1.7;max-width:440px;margin:18px 0 22px;font-size:15px}
+.hero-trust{display:flex;flex-wrap:wrap;gap:18px;color:#334155;font-size:12px;font-weight:700}
+.hero-trust span{display:flex;align-items:center;gap:6px}
+.hero-trust svg{width:15px;color:#2563eb}
+.hero-photo{height:380px;position:relative;border-radius:26px;overflow:hidden;box-shadow:0 20px 50px rgba(37,99,235,.15)}
+.hero-photo img{width:100%;height:100%;object-fit:cover}
+.photo-note{position:absolute;bottom:20px;left:20px;background:#fff;padding:12px 16px;border-radius:14px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(15,23,42,.15)}
+.note-icon{color:#fff;background:#2563eb;height:34px;width:34px;display:grid;place-items:center;border-radius:10px}
+.photo-note b{display:block;font-size:12px;color:#0f172a}
+.photo-note small{color:#64748b;font-size:10px}
+
+.orb-one,.orb-two{width:260px;height:260px;border-radius:50%;background:#bfdbfe;filter:blur(40px);opacity:.5;position:absolute}
+.orb-one{left:-100px;top:-130px}
+.orb-two{right:-130px;bottom:-100px}
+
+/* Search Card Engine */
+.search-wrap{margin-top:28px;position:relative;z-index:30}
+.search-card{background:#fff;padding:20px 22px;border-radius:22px;box-shadow:0 20px 45px rgba(15,23,42,.08);border:1px solid #e2e8f0;position:relative;z-index:30;overflow:visible}
+.trip-tabs{display:flex;align-items:center;gap:16px;border-bottom:1px solid #e2e8f0;padding-bottom:12px;margin-bottom:16px;flex-wrap:wrap}
+.trip-tabs button{font-size:12px;color:#64748b;font-weight:600;padding:4px 8px;border-radius:6px;transition:all .15s}
+.trip-tabs button.active{font-weight:800;color:#2563eb;background:#eff6ff}
+.search-options{margin-left:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.option-select{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:#475569;outline:0}
+
+.fields {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  position: relative;
+  z-index: 30;
+  width: 100%;
+}
+.field-box{position:relative;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:10px 14px;cursor:pointer;transition:border-color .15s;z-index:1;display:flex;flex-direction:column;justify-content:center}
+.field-box:hover,.field-box:focus-within,.field-box.active-dropdown{border-color:#2563eb;background:#fff;z-index:80}
+.field-box label{display:block;font-size:9px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.field-input-val{display:flex;align-items:center;gap:8px}
+.field-input-val svg{color:#2563eb;flex-shrink:0}
+.field-input-val input{border:0;background:transparent;width:100%;font-size:13px;font-weight:800;color:#0f172a;outline:0}
+.field-input-val small{display:block;color:#94a3b8;font-size:10px;font-weight:600}
+
+/* Airport fields pair for swapping */
+.airport-fields-pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 2;
+  min-width: 320px;
+}
+.airport-fields-pair .field-box {
+  flex: 1;
+}
+.swap-airports-btn {
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.swap-airports-btn:hover {
+  background: #2563eb;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.search-btn{height:100%;min-height:52px;border-radius:14px;background:#2563eb;color:#fff;font-weight:800;font-size:13px;display:flex;justify-content:center;align-items:center;gap:8px;transition:all .2s;box-shadow:0 8px 20px rgba(37,99,235,.25);flex: 0 0 160px}
+.search-btn:hover{background:#1d4ed8;transform:translateY(-1px)}
+
+@media (max-width: 1024px) {
+  .fields {
+    flex-wrap: wrap;
+  }
+  .airport-fields-pair {
+    flex: 1 0 100%;
+  }
+  .fields > .field-box {
+    flex: 1;
+  }
+  .search-btn {
+    flex: 1 0 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-photo {
+    max-height: 250px;
+  }
+  .fields {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .airport-fields-pair {
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    gap: 4px;
+  }
+  .airport-fields-pair .field-box {
+    width: 100%;
+  }
+  .swap-airports-btn {
+    transform: rotate(90deg);
+    margin: 4px 0;
+  }
+  .fields > .field-box {
+    width: 100%;
+  }
+  .search-btn {
+    width: 100%;
+    flex: 1 0 auto;
+  }
+}
+
+/* Airport Autocomplete Dropdown */
+.airport-dropdown{position:absolute;left:0;top:calc(100% + 6px);width:100%;min-width:260px;background:#fff;border:1px solid #cbd5e1;border-radius:14px;box-shadow:0 20px 50px rgba(15,23,42,.22);z-index:100;max-height:280px;overflow-y:auto;padding:8px}
+.airport-option{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;border-radius:8px;text-align:left;transition:background .15s}
+.airport-option:hover{background:#eff6ff}
+.airport-option strong{font-size:12px;color:#0f172a;display:block}
+.airport-option small{font-size:10px;color:#64748b}
+
+.hero-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  max-height: 480px;
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(37,99,235,.15);
+}
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Airport fields pair for swapping */
+.airport-fields-pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.swap-airports-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.search-btn{height:100%;min-height:52px;border-radius:14px;background:#2563eb;color:#fff;font-weight:800;font-size:13px;display:flex;justify-content:center;align-items:center;gap:8px;transition:all .2s;box-shadow:0 8px 20px rgba(37,99,235,.25)}
+@media (max-width: 640px) {
+  .hero-photo {
+    max-height: 250px;
+  }
+  .fields {
+    grid-template-columns: 1fr;
+  }
+  .search-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+
+/* Simulated Loading State */
+.loading-box{margin-top:20px;padding:24px;background:#eff6ff;border-radius:16px;border:1px solid #bfdbfe;text-align:center;color:#1e40af}
+.loading-spinner{width:30px;height:30px;border:3px solid #93c5fd;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Flight Search Results Page & View */
+.search-results-layout{display:grid;grid-template-columns:260px 1fr;gap:24px;margin-top:30px}
+.filter-sidebar{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:20px;height:fit-content}
+.filter-sidebar h3{font-size:14px;font-weight:800;margin:0 0 16px;display:flex;align-items:center;justify-content:space-between}
+.reset-link{font-size:11px;color:#2563eb;font-weight:700}
+.filter-group{border-top:1px solid #f1f5f9;padding-top:16px;margin-top:16px}
+.filter-group label.group-title{font-size:11px;font-weight:800;color:#0f172a;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:10px}
+.checkbox-item{display:flex;align-items:center;gap:9px;font-size:12px;color:#475569;margin-bottom:8px;cursor:pointer}
+.checkbox-item input{accent-color:#2563eb;width:15px;height:15px}
+
+.results-header{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e2e8f0;padding:12px 20px;border-radius:14px;margin-bottom:16px}
+.results-header span{font-size:13px;font-weight:800;color:#0f172a}
+.sort-tabs{display:flex;gap:8px}
+.sort-tabs button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;background:#f8fafc;border:1px solid #e2e8f0;color:#64748b}
+.sort-tabs button.active{background:#2563eb;color:#fff;border-color:#2563eb}
+
+.flight-cards-list{display:grid;gap:14px}
+.flight-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:20px;transition:all .2s;box-shadow:0 4px 12px rgba(15,23,42,.03)}
+.flight-card:hover{border-color:#bfdbfe;box-shadow:0 12px 30px rgba(37,99,235,.08)}
+.flight-main{display:grid;grid-template-columns:140px 1fr 140px;align-items:center;gap:20px}
+.airline-info{display:flex;align-items:center;gap:12px}
+.airline-logo-badge{width:42px;height:42px;background:#f1f5f9;border-radius:12px;display:grid;place-items:center;font-size:18px;border:1px solid #e2e8f0}
+.airline-details b{font-size:13px;color:#0f172a;display:block}
+.airline-details small{font-size:10px;color:#64748b;font-weight:600}
+
+.flight-times{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;text-align:center}
+.time-node b{font-size:16px;color:#0f172a;display:block}
+.time-node small{font-size:10px;color:#64748b;font-weight:700}
+.flight-duration-line{position:relative;width:120px}
+.flight-duration-line small{font-size:10px;color:#2563eb;font-weight:800;display:block;margin-bottom:3px}
+.line-visual{height:2px;background:#cbd5e1;position:relative;width:100%;margin:auto}
+.line-visual:after{content:"✈";position:absolute;right:-2px;top:-9px;font-size:10px;color:#2563eb}
+
+.price-booking-action{text-align:right}
+.price-booking-action b{font-size:22px;color:#0f172a;display:block}
+.price-booking-action small{font-size:10px;color:#64748b;display:block;margin-bottom:10px}
+.select-flight-btn{background:#2563eb;color:#fff;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:800;width:100%;transition:background .15s}
+.select-flight-btn:hover{background:#1d4ed8}
+
+.flight-footer-amenities{border-top:1px solid #f1f5f9;margin-top:14px;padding-top:12px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#64748b}
+.amenities-pills{display:flex;gap:6px;flex-wrap:wrap}
+.amenity-tag{background:#f1f5f9;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:600;color:#475569}
+
+/* Generic Section Styles */
+.section{padding:90px 0}
+.section-heading{margin-bottom:40px}
+.section-heading.centered{text-align:center}
+.section-heading.centered .eyebrow{justify-content:center}
+.section-heading h2{font-size:clamp(32px,3.8vw,48px);letter-spacing:-2px}
+.section-heading p{color:#64748b;max-width:460px;line-height:1.7;margin:12px auto 0;font-size:14px}
+
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{padding:26px 20px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;transition:all .25s}
+/* Hero heading adjustments */
+.hero h1 {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .hero {
+    padding: 40px 0 30px;
+  }
+}
+
+.swap-airports-btn:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(15,23,42,.06);border-color:#bfdbfe}
+.feature-icon{height:42px;width:42px;background:#eff6ff;color:#2563eb;border-radius:12px;display:grid;place-items:center}
+.feature-card h3{font-size:14px;font-weight:800;margin:18px 0 8px;color:#0f172a}
+.feature-card p{font-size:12px;line-height:1.7;color:#64748b;margin:0}
+
+/* Destinations */
+.destination-section{background:#eaf2ff;padding:90px 0}
+.split{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.dest-category-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.dest-category-tabs button{padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;background:#fff;border:1px solid #cbd5e1;color:#475569;transition:all .15s}
+.dest-category-tabs button.active{background:#2563eb;color:#fff;border-color:#2563eb}
+
+.destinations{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.destination-card{height:320px;border-radius:20px;overflow:hidden;position:relative;background:#0f172a;color:#fff;box-shadow:0 12px 30px rgba(15,23,42,.15);cursor:pointer}
+.destination-card:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(15,23,42,.92))}
+.destination-card img{height:100%;width:100%;object-fit:cover;transition:transform .5s}
+.destination-card:hover img{transform:scale(1.06)}
+.dest-content{position:absolute;z-index:2;bottom:0;padding:20px;width:100%}
+.dest-header{display:flex;justify-content:space-between;align-items:flex-start}
+.dest-tag{background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.fav-btn{background:rgba(255,255,255,.25);backdrop-filter:blur(6px);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;transition:all .2s}
+.fav-btn.active{background:#ef4444;color:#fff}
+
+.dest-content h3{font-size:18px;font-weight:800;margin:6px 0 2px}
+.dest-content small{font-size:11px;opacity:.85;display:block}
+.dest-footer{margin-top:12px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.2);padding-top:10px}
+.dest-footer b{font-size:13px;color:#93c5fd}
+
+/* Deals */
+.deal-grid{display:grid;gap:12px}
+.deal-card{display:grid;grid-template-columns:48px 1fr 140px 100px;align-items:center;gap:18px;border:1px solid #e2e8f0;background:#fff;border-radius:16px;padding:16px 20px;transition:all .2s}
+.deal-card:hover{border-color:#2563eb;box-shadow:0 8px 24px rgba(37,99,235,.1)}
+.airline-mark{height:40px;width:40px;border-radius:12px;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800;background:#2563eb}
+.deal-info h3{font-size:14px;font-weight:800;margin:0 0 2px;color:#0f172a}
+.deal-info small{color:#64748b;font-size:11px}
+.deal-badge{display:inline-block;background:#fef3c7;color:#b45309;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;margin-left:8px}
+.claim-deal-btn{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;padding:8px 14px;border-radius:10px;font-size:11px;font-weight:800;transition:all .15s}
+.claim-deal-btn:hover{background:#2563eb;color:#fff}
+
+/* Process & Reviews & FAQs */
+.process{background:#0f172a;color:#fff;padding:90px 0}
+.process-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:70px;align-items:center}
+.process .light,.cta .light{color:#93c5fd}
+.steps{border-top:1px solid #334155}
+.step{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid #334155}
+.step>b{font-family:'DM Mono';font-size:12px;color:#f59e0b;padding-top:4px}
+.step h3{font-size:15px;font-weight:800;margin:0 0 6px}
+.step p{margin:0;font-size:12px;color:#94a3b8;line-height:1.6}
+
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.review{border-radius:20px;background:#fff;padding:26px;border:1px solid #e2e8f0;box-shadow:0 6px 20px rgba(15,23,42,.04)}
+.stars{color:#f59e0b;display:flex;gap:3px}
+.review>p{font-family:'Playfair Display',serif;font-size:17px;line-height:1.5;margin:16px 0 24px;color:#1e293b}
+.reviewer{display:flex;gap:12px;align-items:center}
+.reviewer>span{height:34px;width:34px;border-radius:50%;background:#dbeafe;color:#2563eb;display:grid;place-items:center;font-size:12px;font-weight:800}
+
+.faq-section{display:grid;grid-template-columns:.75fr 1.25fr;gap:80px}
+.faq{border-bottom:1px solid #e2e8f0}
+.faq>button{width:100%;text-align:left;padding:18px 0;font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;color:#0f172a}
+.faq.expanded button svg{transform:rotate(180deg);color:#2563eb}
+.faq p{font-size:13px;line-height:1.7;color:#64748b;margin:0;padding-bottom:18px}
+
+/* CTA */
+.cta{position:relative;overflow:hidden;min-height:320px;border-radius:24px;background:#2563eb;color:#fff;padding:50px 56px;display:flex;align-items:center}
+.cta>div{position:relative;z-index:2;max-width:500px}
+.cta p{color:#dbeafe;font-size:14px;line-height:1.6}
+.cta img{position:absolute;right:0;top:0;width:55%;height:100%;object-fit:cover;mask-image:linear-gradient(to right,transparent,#000 40%)}
+
+/* Modals & Overlay Drawers */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(6px);z-index:100;display:grid;place-items:center;padding:20px;overflow-y:auto}
+.modal-card{background:#fff;border-radius:24px;box-shadow:0 25px 60px rgba(15,23,42,.25);width:min(650px,100%);max-height:90vh;overflow-y:auto;position:relative;padding:28px}
+.modal-close-btn{position:absolute;right:20px;top:20px;background:#f1f5f9;color:#64748b;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;transition:all .15s}
+.modal-close-btn:hover{background:#e2e8f0;color:#0f172a}
+
+/* Interactive Booking Drawer */
+.booking-progress{display:flex;justify-content:space-between;margin-bottom:24px;position:relative}
+.booking-progress:after{content:"";position:absolute;top:14px;left:0;right:0;height:2px;background:#e2e8f0;z-index:1}
+.progress-step{position:relative;z-index:2;background:#fff;padding:0 8px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.step-num{width:28px;height:28px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:11px;font-weight:800;display:grid;place-items:center}
+.progress-step.active .step-num{background:#2563eb;color:#fff}
+.progress-step.completed .step-num{background:#16a34a;color:#fff}
+.progress-step label{font-size:10px;font-weight:700;color:#64748b}
+
+.fare-tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.fare-tier-card{border:2px solid #e2e8f0;border-radius:14px;padding:14px;cursor:pointer;transition:all .15s}
+.fare-tier-card.selected{border-color:#2563eb;background:#eff6ff}
+.fare-tier-card h4{margin:0 0 4px;font-size:13px;color:#0f172a}
+.fare-tier-card b{font-size:15px;color:#2563eb;display:block;margin-bottom:8px}
+.fare-tier-card ul{margin:0;padding-left:16px;font-size:10px;color:#64748b;line-height:1.6}
+
+.booking-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field label{font-size:11px;font-weight:700;color:#475569}
+.form-field input,.form-field select{padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:13px;outline:0}
+.form-field input:focus,.form-field select:focus{border-color:#2563eb}
+
+.boarding-pass{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;border-radius:20px;padding:24px;margin-top:16px;box-shadow:0 12px 30px rgba(15,23,42,.3)}
+.pass-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #475569;padding-bottom:14px;margin-bottom:16px}
+.pass-body{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;font-size:11px}
+.pass-body label{color:#94a3b8;font-size:9px;text-transform:uppercase;letter-spacing:1px;display:block}
+.pass-body b{font-size:13px;color:#fff}
+
+/* Wishlist Drawer */
+.wishlist-drawer{position:fixed;right:0;top:0;bottom:0;width:min(400px,100%);background:#fff;box-shadow:-10px 0 40px rgba(15,23,42,.2);z-index:90;padding:24px;overflow-y:auto;display:flex;flex-direction:column}
+.drawer-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:16px;margin-bottom:16px}
+.wishlist-items-list{display:grid;gap:12px;flex:1;overflow-y:auto}
+.wishlist-item-card{display:flex;align-items:center;gap:12px;border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc}
+.wishlist-item-card img{width:54px;height:54px;border-radius:8px;object-fit:cover}
+
+/* Custom Journey Planner */
+.journey-planner{background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:32px;margin-top:40px;box-shadow:0 10px 30px rgba(15,23,42,.05)}
+.planner-steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.planner-option-card{border:2px solid #e2e8f0;border-radius:16px;padding:18px;cursor:pointer;transition:all .15s;text-align:center}
+.planner-option-card.selected{border-color:#2563eb;background:#eff6ff}
+
+/* Footer */
+footer{background:#fff;margin-top:90px;border-top:1px solid #e2e8f0}
+.footer-main{padding:50px 0 40px;display:grid;grid-template-columns:1.25fr .7fr 1fr;gap:50px}
+.footer-main p{font-size:12px;color:#64748b;line-height:1.7;max-width:220px}
+.social{display:flex;gap:12px;color:#64748b}
+.email{display:flex;border-bottom:1px solid #94a3b8;width:240px;padding:6px 0}
+.email input{border:0;outline:0;width:100%;font-size:12px;background:transparent}
+.email button{color:#2563eb}
+.footer-bottom{border-top:1px solid #e2e8f0;padding:18px 0;display:flex;justify-content:space-between;color:#94a3b8;font-size:11px}
+
+/* Responsive Media Queries */
+@media(max-width:960px){
+  .fields{grid-template-columns:1fr 1fr;gap:10px}
+  .search-btn{grid-column:1/-1}
+  .features,.destinations,.reviews{grid-template-columns:1fr 1fr}
+  .deal-card{grid-template-columns:40px 1fr 100px}
+  .flight-main{grid-template-columns:1fr;gap:12px}
+  .search-results-layout{grid-template-columns:1fr}
+  .faq-section,.process-grid,.page-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:640px){
+  .desktop-nav,.desktop-only{display:none}
+  .menu{display:block}
+  .mobile-nav{display:grid;overflow:hidden;background:#fff;padding:0 20px;border-bottom:1px solid #e2e8f0}
+  .mobile-nav button{text-align:left;padding:12px 0;border-bottom:1px solid #f1f5f9;font-weight:700;font-size:13px}
+  .destinations,.features,.reviews{grid-template-columns:1fr}
+  .fields{grid-template-columns:1fr}
+  .cta{padding:30px 20px;min-height:280px}
+  .cta img{width:100%;opacity:.35}
+  .footer-main{grid-template-columns:1fr;gap:24px}
+  .fare-tier-grid{grid-template-columns:1fr}
+  .pass-body{grid-template-columns:1fr 1fr}
+}
