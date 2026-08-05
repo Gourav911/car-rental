@@ -39,18 +39,18 @@ function doPost(e) {
       var headers = [
         "Timestamp",
         "Submission Type",
-        "Vehicle Type / Car",
-        "Driver Name",
-        "Phone",
+        "First Name",
+        "Last Name",
         "Email",
-        "Pickup Location",
-        "Pickup Date & Time",
-        "Drop-off Location",
-        "Drop-off Date & Time",
-        "Return Type",
-        "Driver Age",
+        "Phone",
         "Subject",
         "Booking Number",
+        "Pickup Location",
+        "Pickup Date",
+        "Return Date",
+        "Return Type",
+        "Driver Age",
+        "Vehicle Type",
         "Browser",
         "Operating System",
         "User Agent"
@@ -65,15 +65,14 @@ function doPost(e) {
     } else {
       // Auto-upgrade logic for existing sheets with old headers
       var currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-      var contactIdx = currentHeaders.indexOf("Contact (Phone / Email)");
-      if (contactIdx !== -1) {
-        // Replace "Contact (Phone / Email)" with "Phone"
-        sheet.getRange(1, contactIdx + 1).setValue("Phone");
-        // Insert a new column for "Email"
-        sheet.insertColumnAfter(contactIdx + 1);
-        sheet.getRange(1, contactIdx + 2).setValue("Email");
+      var emailIdx = currentHeaders.indexOf("Email");
+      var phoneIdx = currentHeaders.indexOf("Phone");
+      if (emailIdx !== -1 && phoneIdx === -1) {
+        // Insert a new column for "Phone" right after "Email"
+        sheet.insertColumnAfter(emailIdx + 1);
+        sheet.getRange(1, emailIdx + 2).setValue("Phone");
         // Style the new header
-        sheet.getRange(1, contactIdx + 2)
+        sheet.getRange(1, emailIdx + 2)
           .setFontWeight("bold")
           .setBackground("#0F172A")
           .setFontColor("#FFFFFF");
@@ -84,11 +83,18 @@ function doPost(e) {
     var submissionType = data.type || "Booking Lead";
     var vehicleType = data.vehicleType || "N/A";
     
-    var customerName = data.customerName || ((data.firstName || "") + " " + (data.lastName || "")).trim();
-    if (!customerName || customerName === "") customerName = "N/A";
+    var firstName = data.firstName || "N/A";
+    var lastName = data.lastName || "N/A";
+    
+    // Split customerName into First/Last Name if needed
+    if (data.customerName && (firstName === "N/A" || firstName === "") && (lastName === "N/A" || lastName === "")) {
+      var nameParts = data.customerName.trim().split(/\s+/);
+      firstName = nameParts[0] || "N/A";
+      lastName = nameParts.slice(1).join(" ") || "N/A";
+    }
 
-    var phone = data.phone || "N/A";
     var email = data.email || "N/A";
+    var phone = data.phone || "N/A";
     
     // Fallback if data is sent in old contactInfo format
     if (phone === "N/A" && email === "N/A" && data.contactInfo) {
@@ -103,11 +109,9 @@ function doPost(e) {
       }
     }
 
-    var pickupLoc = data.pickupLocation || "N/A";
-    var pickupDateTime = (data.pickupDate || "N/A") + (data.pickupTime ? (" " + data.pickupTime) : "");
-    var dropoffLoc = data.dropoffLocation || (data.returnType === "Same Location" ? pickupLoc : "N/A");
-    var dropoffDateTime = (data.returnDate || "N/A") + (data.returnTime ? (" " + data.returnTime) : "");
-    
+    var pickupLocation = data.pickupLocation || "N/A";
+    var pickupDate = (data.pickupDate || "N/A") + (data.pickupTime ? (" " + data.pickupTime) : "");
+    var returnDate = (data.returnDate || "N/A") + (data.returnTime ? (" " + data.returnTime) : "");
     var returnType = data.returnType || "N/A";
     var driverAge = data.driverAge || "N/A";
     var subject = data.subject || "N/A";
@@ -119,18 +123,18 @@ function doPost(e) {
     var newRow = [
       timestamp,
       submissionType,
-      vehicleType,
-      customerName,
-      phone,
+      firstName,
+      lastName,
       email,
-      pickupLoc,
-      pickupDateTime,
-      dropoffLoc,
-      dropoffDateTime,
-      returnType,
-      driverAge,
+      phone,
       subject,
       bookingNumber,
+      pickupLocation,
+      pickupDate,
+      returnDate,
+      returnType,
+      driverAge,
+      vehicleType,
       browser,
       operatingSystem,
       userAgent
@@ -150,13 +154,13 @@ function doPost(e) {
               type: submissionType,
               timestamp: timestamp,
               vehicleType: vehicleType,
-              customerName: customerName,
-              phone: phone,
+              firstName: firstName,
+              lastName: lastName,
               email: email,
-              pickupLoc: pickupLoc,
-              pickupDateTime: pickupDateTime,
-              dropoffLoc: dropoffLoc,
-              dropoffDateTime: dropoffDateTime,
+              phone: phone,
+              pickupLocation: pickupLocation,
+              pickupDate: pickupDate,
+              returnDate: returnDate,
               returnType: returnType,
               driverAge: driverAge,
               subject: subject,
@@ -185,18 +189,23 @@ function doPost(e) {
 }
 
 function sendEmailNotification(d) {
-  var mailSubject = "🚨 New " + d.type + " Lead: " + d.vehicleType + " - " + d.customerName;
+  var customerName = (d.firstName !== "N/A" || d.lastName !== "N/A") 
+    ? (d.firstName + " " + d.lastName).trim() 
+    : "N/A";
+  var mailSubject = "🚨 New " + d.type + " Lead: " + d.vehicleType + " - " + customerName;
   var htmlBody = ""
     + "<div style='font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;'>"
     + "<h2 style='color: #0F172A; border-bottom: 2px solid #2563EB; padding-bottom: 10px;'>New " + d.type + " Lead Received</h2>"
     + "<p><strong>Received At:</strong> " + d.timestamp + "</p>"
     + "<table style='width: 100%; border-collapse: collapse; margin-top: 15px;'>"
     + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Car / Vehicle Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold; color: #2563EB;'>" + d.vehicleType + "</td></tr>"
-    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Name</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold;'>" + d.customerName + "</td></tr>"
+    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Name</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold;'>" + customerName + "</td></tr>"
     + (d.phone !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Phone Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold; color: #059669;'>" + d.phone + "</td></tr>" : "")
     + (d.email !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Email Address</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold; color: #2563EB;'>" + d.email + "</td></tr>" : "")
-    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pick-up</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupLoc + " (" + d.pickupDateTime + ")</td></tr>"
-    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Drop-off</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.dropoffLoc + " (" + d.dropoffDateTime + ")</td></tr>"
+    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pick-up Location</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupLocation + "</td></tr>"
+    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pick-up Date & Time</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupDate + "</td></tr>"
+    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Drop-off Date & Time</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnDate + "</td></tr>"
+    + (d.returnType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnType + "</td></tr>" : "")
     + (d.driverAge !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Age</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.driverAge + "</td></tr>" : "")
     + (d.subject !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Subject</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.subject + "</td></tr>" : "")
     + (d.bookingNumber !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Booking Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.bookingNumber + "</td></tr>" : "")
