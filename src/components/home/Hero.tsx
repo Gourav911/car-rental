@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Users, Car, Search, ChevronDown, ArrowRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Calendar, Clock, User, Phone, Mail, Car, Search, ChevronDown, ArrowRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { submitBookingToGoogleSheets } from '../../services/googleSheets';
 
 const vehicleTypes = ['Any Type', 'Economy', 'SUV', 'Luxury', 'Electric', 'Convertible', 'Van'];
@@ -8,12 +8,16 @@ const popularCities = ['Dubai', 'London', 'New York', 'Paris', 'Tokyo', 'Los Ang
 
 const Hero: React.FC = () => {
   const [form, setForm] = useState({
+    vehicleType: 'Any Type',
     pickupLocation: '',
     dropoffLocation: '',
     pickupDate: '',
+    pickupTime: '10:00',
     returnDate: '',
-    driverAge: '25+',
-    vehicleType: 'Any Type',
+    returnTime: '10:00',
+    customerName: '',
+    phone: '',
+    email: '',
   });
   const [sameLocation, setSameLocation] = useState(true);
 
@@ -44,37 +48,56 @@ const Hero: React.FC = () => {
       setErrorMessage('Return Date must not be earlier than Pickup Date.');
       return;
     }
+    if (!form.customerName.trim()) {
+      setErrorMessage('Driver Name is required.');
+      return;
+    }
+    if (!form.phone.trim() && !form.email.trim()) {
+      setErrorMessage('Please provide at least a Phone number or Email so we can reach you.');
+      return;
+    }
 
     setLoading(true);
 
     try {
       const returnType = sameLocation ? 'Same Location' : 'Different Location';
+      const contactInfo = [form.phone.trim(), form.email.trim()].filter(Boolean).join(' / ');
+
       const response = await submitBookingToGoogleSheets({
-        pickupLocation: form.pickupLocation,
-        dropoffLocation: !sameLocation ? form.dropoffLocation : '',
-        pickupDate: form.pickupDate,
-        returnDate: form.returnDate,
-        returnType: returnType,
-        driverAge: form.driverAge,
         vehicleType: form.vehicleType,
+        pickupLocation: form.pickupLocation,
+        pickupDate: form.pickupDate,
+        pickupTime: form.pickupTime,
+        dropoffLocation: !sameLocation ? form.dropoffLocation : form.pickupLocation,
+        returnDate: form.returnDate,
+        returnTime: form.returnTime,
+        returnType: returnType,
+        customerName: form.customerName,
+        phone: form.phone,
+        email: form.email,
+        contactInfo: contactInfo,
       });
 
       if (response.success) {
-        setSuccessMessage(response.message || 'Booking request submitted successfully!');
+        setSuccessMessage(response.message || 'Thank you! Your request has been received. Our team will contact you shortly.');
         // Clear form on success
         setForm({
+          vehicleType: 'Any Type',
           pickupLocation: '',
           dropoffLocation: '',
           pickupDate: '',
+          pickupTime: '10:00',
           returnDate: '',
-          driverAge: '25+',
-          vehicleType: 'Any Type',
+          returnTime: '10:00',
+          customerName: '',
+          phone: '',
+          email: '',
         });
       } else {
-        setErrorMessage(response.message || 'Failed to submit booking request.');
+        setErrorMessage(response.message || 'Failed to submit request.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'An error occurred while submitting your booking.');
+      setErrorMessage(err.message || 'An error occurred while submitting your request.');
     } finally {
       setLoading(false);
     }
@@ -151,7 +174,7 @@ const Hero: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Booking Widget */}
+        {/* Booking Lead Widget */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -182,14 +205,14 @@ const Hero: React.FC = () => {
 
           {/* Feedback messages */}
           {successMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-center gap-2">
+            <div className="mb-4 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
               <span>{successMessage}</span>
             </div>
           )}
 
           {errorMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-sm flex items-center gap-2">
+            <div className="mb-4 p-4 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-sm flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -197,7 +220,86 @@ const Hero: React.FC = () => {
 
           <form onSubmit={handleSearch}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Pickup Location */}
+              
+              {/* 1. Car Type / Vehicle Name */}
+              <div className="relative">
+                <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
+                  Car Type / Vehicle Name
+                </label>
+                <div className="relative">
+                  <Car className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400 pointer-events-none" />
+                  <select
+                    id="hero-vehicle-type"
+                    value={form.vehicleType}
+                    onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-8 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all appearance-none [color-scheme:dark]"
+                    disabled={loading}
+                  >
+                    {vehicleTypes.map((v) => <option key={v} value={v} className="bg-slate-900 text-white py-2">{v}</option>)}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* 2. Driver Name */}
+              <div className="relative">
+                <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
+                  <span className="text-amber-400 mr-1">*</span>Driver Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
+                  <input
+                    type="text"
+                    id="hero-driver-name"
+                    placeholder="Full name"
+                    value={form.customerName}
+                    onChange={(e) => setForm({ ...form, customerName: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* 3. Phone Number */}
+              <div className="relative">
+                <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
+                  <input
+                    type="tel"
+                    id="hero-phone"
+                    placeholder="+1 (555) 000-0000"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              {/* 4. Email Address */}
+              <div className="relative">
+                <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
+                  <input
+                    type="email"
+                    id="hero-email"
+                    placeholder="name@example.com"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              {/* 5. Pickup Location */}
               <div className="relative">
                 <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
                   Pickup Location
@@ -221,7 +323,7 @@ const Hero: React.FC = () => {
                 </div>
               </div>
 
-              {/* Dropoff Location */}
+              {/* Drop-off Location (If different location selected) */}
               {!sameLocation && (
                 <div className="relative">
                   <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
@@ -246,90 +348,75 @@ const Hero: React.FC = () => {
                 </div>
               )}
 
-              {/* Pickup Date */}
+              {/* 6. Pick-up Date & Time */}
               <div>
                 <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
-                  Pickup Date
+                  Pick-up Date & Time
                 </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400 pointer-events-none" />
-                  <input
-                    type="date"
-                    id="hero-pickup-date"
-                    value={form.pickupDate}
-                    onChange={(e) => setForm({ ...form, pickupDate: e.target.value })}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all [color-scheme:dark]"
-                    disabled={loading}
-                    required
-                  />
+                <div className="grid grid-cols-5 gap-2">
+                  <div className="col-span-3 relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400 pointer-events-none" />
+                    <input
+                      type="date"
+                      id="hero-pickup-date"
+                      value={form.pickupDate}
+                      onChange={(e) => setForm({ ...form, pickupDate: e.target.value })}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-2 py-3.5 text-white text-xs sm:text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all [color-scheme:dark]"
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+                  <div className="col-span-2 relative">
+                    <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-secondary-400 pointer-events-none" />
+                    <input
+                      type="time"
+                      id="hero-pickup-time"
+                      value={form.pickupTime}
+                      onChange={(e) => setForm({ ...form, pickupTime: e.target.value })}
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-7 pr-1 py-3.5 text-white text-xs focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all [color-scheme:dark]"
+                      disabled={loading}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Return Date */}
+              {/* 7. Drop-off Date & Time */}
               <div>
                 <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
-                  Return Date
+                  Drop-off Date & Time
                 </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-accent-400 pointer-events-none" />
-                  <input
-                    type="date"
-                    id="hero-return-date"
-                    value={form.returnDate}
-                    onChange={(e) => setForm({ ...form, returnDate: e.target.value })}
-                    min={form.pickupDate || new Date().toISOString().split('T')[0]}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-accent-400 focus:bg-white/15 transition-all [color-scheme:dark]"
-                    disabled={loading}
-                    required
-                  />
+                <div className="grid grid-cols-5 gap-2">
+                  <div className="col-span-3 relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent-400 pointer-events-none" />
+                    <input
+                      type="date"
+                      id="hero-return-date"
+                      value={form.returnDate}
+                      onChange={(e) => setForm({ ...form, returnDate: e.target.value })}
+                      min={form.pickupDate || new Date().toISOString().split('T')[0]}
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-9 pr-2 py-3.5 text-white text-xs sm:text-sm focus:outline-none focus:border-accent-400 focus:bg-white/15 transition-all [color-scheme:dark]"
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+                  <div className="col-span-2 relative">
+                    <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-accent-400 pointer-events-none" />
+                    <input
+                      type="time"
+                      id="hero-return-time"
+                      value={form.returnTime}
+                      onChange={(e) => setForm({ ...form, returnTime: e.target.value })}
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-7 pr-1 py-3.5 text-white text-xs focus:outline-none focus:border-accent-400 focus:bg-white/15 transition-all [color-scheme:dark]"
+                      disabled={loading}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Driver Age */}
-              <div>
-                <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
-                  Driver Age
-                </label>
-                <div className="relative">
-                  <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400 pointer-events-none" />
-                  <select
-                    id="hero-driver-age"
-                    value={form.driverAge}
-                    onChange={(e) => setForm({ ...form, driverAge: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-8 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all appearance-none [color-scheme:dark]"
-                    disabled={loading}
-                  >
-                    <option value="18-20" className="bg-slate-900 text-white py-2">18–20 years</option>
-                    <option value="21-24" className="bg-slate-900 text-white py-2">21–24 years</option>
-                    <option value="25+" className="bg-slate-900 text-white py-2">25+ years</option>
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Vehicle Type */}
-              <div>
-                <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-2">
-                  Vehicle Type
-                </label>
-                <div className="relative">
-                  <Car className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400 pointer-events-none" />
-                  <select
-                    id="hero-vehicle-type"
-                    value={form.vehicleType}
-                    onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}
-                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-8 py-3.5 text-white text-sm focus:outline-none focus:border-secondary-400 focus:bg-white/15 transition-all appearance-none [color-scheme:dark]"
-                    disabled={loading}
-                  >
-                    {vehicleTypes.map((v) => <option key={v} value={v} className="bg-slate-900 text-white py-2">{v}</option>)}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
-                </div>
-              </div>
             </div>
 
-            {/* Search Button */}
+            {/* Submit Button */}
             <div className="mt-6">
               <button
                 type="submit"
@@ -340,12 +427,12 @@ const Hero: React.FC = () => {
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Submitting...
+                    Submitting Request...
                   </>
                 ) : (
                   <>
                     <Search className="w-5 h-5" />
-                    Search Available Cars
+                    Get Instant Quote & Reserve
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}

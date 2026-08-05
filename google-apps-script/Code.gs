@@ -1,13 +1,17 @@
 /**
  * Google Apps Script Backend Code for Car Rental Application
- * Handles both main booking form & floating chat inquiry form submissions.
- * Includes GmailApp fallback for seamless email notifications.
+ * Handles main hero booking form, car details form & floating chat inquiry form submissions.
+ * Supports multiple recipient notification emails with GmailApp fallback.
  */
 
 // Configuration
 var SPREADSHEET_ID = ""; // Leave blank if attached to spreadsheet directly
 var SHEET_NAME = "Bookings";
-var NOTIFICATION_EMAIL = "abhishekchawala793@gmail.com"; // Replace with your email address
+// Add multiple recipient emails here as an array
+var NOTIFICATION_EMAILS = [
+  "support@carrentaldesk.net",
+  "abhishekchawala793@gmail.com"
+];
 
 function doPost(e) {
   try {
@@ -35,17 +39,18 @@ function doPost(e) {
       var headers = [
         "Timestamp",
         "Submission Type",
-        "First Name",
-        "Last Name",
+        "Vehicle Type / Car",
+        "Driver Name",
+        "Phone",
         "Email",
-        "Subject",
-        "Booking Number",
         "Pickup Location",
-        "Pickup Date",
-        "Return Date",
+        "Pickup Date & Time",
+        "Drop-off Location",
+        "Drop-off Date & Time",
         "Return Type",
         "Driver Age",
-        "Vehicle Type",
+        "Subject",
+        "Booking Number",
         "Browser",
         "Operating System",
         "User Agent"
@@ -57,21 +62,56 @@ function doPost(e) {
       headerRange.setFontWeight("bold");
       headerRange.setBackground("#0F172A");
       headerRange.setFontColor("#FFFFFF");
+    } else {
+      // Auto-upgrade logic for existing sheets with old headers
+      var currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      var contactIdx = currentHeaders.indexOf("Contact (Phone / Email)");
+      if (contactIdx !== -1) {
+        // Replace "Contact (Phone / Email)" with "Phone"
+        sheet.getRange(1, contactIdx + 1).setValue("Phone");
+        // Insert a new column for "Email"
+        sheet.insertColumnAfter(contactIdx + 1);
+        sheet.getRange(1, contactIdx + 2).setValue("Email");
+        // Style the new header
+        sheet.getRange(1, contactIdx + 2)
+          .setFontWeight("bold")
+          .setBackground("#0F172A")
+          .setFontColor("#FFFFFF");
+      }
     }
 
     var timestamp = data.timestamp || new Date().toISOString();
-    var submissionType = data.type || "Booking";
-    var firstName = data.firstName || "N/A";
-    var lastName = data.lastName || "N/A";
+    var submissionType = data.type || "Booking Lead";
+    var vehicleType = data.vehicleType || "N/A";
+    
+    var customerName = data.customerName || ((data.firstName || "") + " " + (data.lastName || "")).trim();
+    if (!customerName || customerName === "") customerName = "N/A";
+
+    var phone = data.phone || "N/A";
     var email = data.email || "N/A";
-    var subject = data.subject || "N/A";
-    var bookingNumber = data.bookingNumber || "N/A";
-    var pickupLocation = data.pickupLocation || "N/A";
-    var pickupDate = data.pickupDate || "N/A";
-    var returnDate = data.returnDate || "N/A";
+    
+    // Fallback if data is sent in old contactInfo format
+    if (phone === "N/A" && email === "N/A" && data.contactInfo) {
+      if (data.contactInfo.indexOf(" / ") !== -1) {
+        var parts = data.contactInfo.split(" / ");
+        phone = parts[0] || "N/A";
+        email = parts[1] || "N/A";
+      } else if (data.contactInfo.indexOf("@") !== -1) {
+        email = data.contactInfo;
+      } else {
+        phone = data.contactInfo;
+      }
+    }
+
+    var pickupLoc = data.pickupLocation || "N/A";
+    var pickupDateTime = (data.pickupDate || "N/A") + (data.pickupTime ? (" " + data.pickupTime) : "");
+    var dropoffLoc = data.dropoffLocation || (data.returnType === "Same Location" ? pickupLoc : "N/A");
+    var dropoffDateTime = (data.returnDate || "N/A") + (data.returnTime ? (" " + data.returnTime) : "");
+    
     var returnType = data.returnType || "N/A";
     var driverAge = data.driverAge || "N/A";
-    var vehicleType = data.vehicleType || "N/A";
+    var subject = data.subject || "N/A";
+    var bookingNumber = data.bookingNumber || "N/A";
     var browser = data.browser || "Unknown";
     var operatingSystem = data.operatingSystem || "Unknown";
     var userAgent = data.userAgent || "";
@@ -79,17 +119,18 @@ function doPost(e) {
     var newRow = [
       timestamp,
       submissionType,
-      firstName,
-      lastName,
+      vehicleType,
+      customerName,
+      phone,
       email,
-      subject,
-      bookingNumber,
-      pickupLocation,
-      pickupDate,
-      returnDate,
+      pickupLoc,
+      pickupDateTime,
+      dropoffLoc,
+      dropoffDateTime,
       returnType,
       driverAge,
-      vehicleType,
+      subject,
+      bookingNumber,
       browser,
       operatingSystem,
       userAgent
@@ -98,29 +139,35 @@ function doPost(e) {
     // Store in sheet
     sheet.appendRow(newRow);
 
-    // Send instant email notification
-    if (NOTIFICATION_EMAIL && NOTIFICATION_EMAIL.trim() !== "") {
-      try {
-        sendEmailNotification({
-          recipient: NOTIFICATION_EMAIL,
-          type: submissionType,
-          timestamp: timestamp,
-          pickupLocation: pickupLocation,
-          pickupDate: pickupDate,
-          returnDate: returnDate,
-          returnType: returnType,
-          driverAge: driverAge,
-          vehicleType: vehicleType,
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          subject: subject,
-          bookingNumber: bookingNumber,
-          browser: browser,
-          os: operatingSystem
-        });
-      } catch (emailErr) {
-        Logger.log("Email notification error: " + emailErr.toString());
+    // Send instant email notification to all configured emails
+    if (NOTIFICATION_EMAILS && NOTIFICATION_EMAILS.length > 0) {
+      for (var i = 0; i < NOTIFICATION_EMAILS.length; i++) {
+        var recipientEmail = NOTIFICATION_EMAILS[i].trim();
+        if (recipientEmail !== "") {
+          try {
+            sendEmailNotification({
+              recipient: recipientEmail,
+              type: submissionType,
+              timestamp: timestamp,
+              vehicleType: vehicleType,
+              customerName: customerName,
+              phone: phone,
+              email: email,
+              pickupLoc: pickupLoc,
+              pickupDateTime: pickupDateTime,
+              dropoffLoc: dropoffLoc,
+              dropoffDateTime: dropoffDateTime,
+              returnType: returnType,
+              driverAge: driverAge,
+              subject: subject,
+              bookingNumber: bookingNumber,
+              browser: browser,
+              os: operatingSystem
+            });
+          } catch (emailErr) {
+            Logger.log("Email notification error for " + recipientEmail + ": " + emailErr.toString());
+          }
+        }
       }
     }
 
@@ -138,25 +185,24 @@ function doPost(e) {
 }
 
 function sendEmailNotification(d) {
-  var mailSubject = "🚨 New " + d.type + " Notification - CarRentalDesk";
+  var mailSubject = "🚨 New " + d.type + " Lead: " + d.vehicleType + " - " + d.customerName;
   var htmlBody = ""
     + "<div style='font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;'>"
-    + "<h2 style='color: #0F172A; border-bottom: 2px solid #2563EB; padding-bottom: 10px;'>New Website " + d.type + " Received</h2>"
-    + "<p><strong>Time:</strong> " + d.timestamp + "</p>"
+    + "<h2 style='color: #0F172A; border-bottom: 2px solid #2563EB; padding-bottom: 10px;'>New " + d.type + " Lead Received</h2>"
+    + "<p><strong>Received At:</strong> " + d.timestamp + "</p>"
     + "<table style='width: 100%; border-collapse: collapse; margin-top: 15px;'>"
-    + (d.pickupLocation !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pickup Location</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupLocation + "</td></tr>" : "")
-    + (d.pickupDate !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pickup Date</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupDate + "</td></tr>" : "")
-    + (d.returnDate !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Date</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnDate + "</td></tr>" : "")
-    + (d.returnType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Return Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.returnType + "</td></tr>" : "")
+    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Car / Vehicle Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold; color: #2563EB;'>" + d.vehicleType + "</td></tr>"
+    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Name</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold;'>" + d.customerName + "</td></tr>"
+    + (d.phone !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Phone Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold; color: #059669;'>" + d.phone + "</td></tr>" : "")
+    + (d.email !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Email Address</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0; font-weight: bold; color: #2563EB;'>" + d.email + "</td></tr>" : "")
+    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Pick-up</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.pickupLoc + " (" + d.pickupDateTime + ")</td></tr>"
+    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Drop-off</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.dropoffLoc + " (" + d.dropoffDateTime + ")</td></tr>"
     + (d.driverAge !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Driver Age</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.driverAge + "</td></tr>" : "")
-    + (d.vehicleType !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Vehicle Type</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.vehicleType + "</td></tr>" : "")
-    + (d.firstName !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Name</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.firstName + " " + d.lastName + "</td></tr>" : "")
-    + (d.email !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Customer Email</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.email + "</td></tr>" : "")
-    + (d.subject !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Subject</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.subject + "</td></tr>" : "")
-    + (d.bookingNumber !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Booking Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.bookingNumber + "</td></tr>" : "")
-    + "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Browser / OS</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.browser + " on " + d.os + "</td></tr>"
+    + (d.subject !== "N/A" ? "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Subject</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.subject + "</td></tr>" : "")
+    + (d.bookingNumber !== "N/A" ? "<tr style='background: #f8fafc;'><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Booking Number</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.bookingNumber + "</td></tr>" : "")
+    + "<tr><td style='padding: 8px; border: 1px solid #e2e8f0;'><strong>Browser / OS</strong></td><td style='padding: 8px; border: 1px solid #e2e8f0;'>" + d.browser + " on " + d.os + "</td></tr>"
     + "</table>"
-    + "<p style='margin-top: 20px; font-size: 12px; color: #64748b;'>CarRentalDesk Automated System</p>"
+    + "<p style='margin-top: 20px; font-size: 12px; color: #64748b;'>CarRentalDesk Lead Tracking System</p>"
     + "</div>";
 
   try {
@@ -174,7 +220,7 @@ function sendEmailNotification(d) {
 function authorizeEmailPermissions() {
   var me = Session.getActiveUser().getEmail();
   if (!me) {
-    me = NOTIFICATION_EMAIL;
+    me = NOTIFICATION_EMAILS[0];
   }
   MailApp.sendEmail(me, "Permission Verification - CarRentalDesk", "Email permissions have been successfully granted!");
 }

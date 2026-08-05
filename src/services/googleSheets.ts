@@ -4,13 +4,18 @@ export interface BookingData {
   type?: string;
   firstName?: string;
   lastName?: string;
+  customerName?: string;
   email?: string;
+  phone?: string;
+  contactInfo?: string;
   subject?: string;
   bookingNumber?: string;
   pickupLocation?: string;
   dropoffLocation?: string;
   pickupDate?: string;
+  pickupTime?: string;
   returnDate?: string;
+  returnTime?: string;
   returnType?: string;
   driverAge?: string;
   vehicleType?: string;
